@@ -16,7 +16,7 @@ jobs:
       env:
         TAILSCALE_AUTHKEY: ${{ secrets.TAILSCALE_AUTHKEY }}
       run: |
-        "C:\Program Files\Tailscale\tailscale.exe" up `
+        & "C:\Program Files\Tailscale\tailscale.exe" up `
           --authkey $env:TAILSCALE_AUTHKEY `
           --hostname github-runner `
           --accept-routes
