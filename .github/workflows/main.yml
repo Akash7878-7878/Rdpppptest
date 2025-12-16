@@ -7,19 +7,15 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - name: Download latest ngrok
-      run: |
-        Invoke-WebRequest https://ngrok-agent.s3.amazonaws.com/ngrok-stable-windows-amd64.zip -OutFile ngrok.zip
+    - name: Install ngrok via Chocolatey
+      run: choco install ngrok -y
 
-    - name: Extract
-      run: Expand-Archive ngrok.zip -DestinationPath ngrok
-
-    - name: Auth
-      run: .\ngrok\ngrok.exe config add-authtoken $Env:NGROK_AUTH_TOKEN
+    - name: Add ngrok auth token
+      run: ngrok config add-authtoken $Env:NGROK_AUTH_TOKEN
       env:
         NGROK_AUTH_TOKEN: ${{ secrets.NGROK_AUTH_TOKEN }}
 
-    - name: Enable RDP
+    - name: Enable TS
       run: Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name "fDenyTSConnections" -Value 0
 
     - name: Enable Firewall
@@ -32,4 +28,4 @@ jobs:
       run: Set-LocalUser -Name "runneradmin" -Password (ConvertTo-SecureString "P@ssw0rd!" -AsPlainText -Force)
 
     - name: Create Tunnel
-      run: .\ngrok\ngrok.exe tcp 3389
+      run: ngrok tcp 3389
