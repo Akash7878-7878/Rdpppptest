@@ -8,22 +8,38 @@ jobs:
 
     steps:
     - name: Install Tailscale
+      shell: powershell
       run: choco install tailscale -y
 
     - name: Connect to Tailscale
-      run: |
-        tailscale up --authkey $Env:TAILSCALE_AUTHKEY --hostname github-runner --accept-routes
+      shell: powershell
       env:
         TAILSCALE_AUTHKEY: ${{ secrets.TAILSCALE_AUTHKEY }}
+      run: |
+        "C:\Program Files\Tailscale\tailscale.exe" up `
+          --authkey $env:TAILSCALE_AUTHKEY `
+          --hostname github-runner `
+          --accept-routes
 
     - name: Enable RDP
-      run: Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name "fDenyTSConnections" -Value 0
+      shell: powershell
+      run: |
+        Set-ItemProperty `
+          -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' `
+          -Name "fDenyTSConnections" `
+          -Value 0
 
     - name: Enable Firewall
+      shell: powershell
       run: Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
 
     - name: Set Password
-      run: Set-LocalUser -Name "runneradmin" -Password (ConvertTo-SecureString "P@ssw0rd!" -AsPlainText -Force)
+      shell: powershell
+      run: |
+        Set-LocalUser `
+          -Name "runneradmin" `
+          -Password (ConvertTo-SecureString "P@ssw0rd!" -AsPlainText -Force)
 
     - name: Keep Alive
+      shell: cmd
       run: timeout /t 21600
