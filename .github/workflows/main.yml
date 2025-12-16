@@ -41,5 +41,5 @@ jobs:
           -Password (ConvertTo-SecureString "P@ssw0rd!" -AsPlainText -Force)
 
     - name: Keep Alive
-      shell: cmd
-      run: timeout /t 21600
+      shell: powershell
+      run: Start-Sleep -Seconds 21600
